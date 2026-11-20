@@ -144,6 +144,7 @@ section{position:relative}
 .it .fact{display:block;margin-top:10px;font-weight:700;color:var(--ink);font-size:15px}
 .it .tg{display:flex;gap:6px;flex-wrap:wrap;margin-top:16px}.it .tg span{padding:6px 11px;border-radius:2px;border:1px solid var(--lineD);font-size:13px;font-weight:600}
 .it .url{display:block;margin-top:14px;font-size:13px;color:var(--mut2)}
+.it .blur,.it .num,.it .go-btn,.it .swipe{display:none}
 /* animations des projets */
 .grid.leave .it{opacity:0;transform:translateY(24px) scale(.98);transition:opacity .3s,transform .3s}
 .it.enter{opacity:0;transform:translateY(50px)}
@@ -316,6 +317,34 @@ footer{padding:60px 0 130px;color:var(--mut);font-size:14px}footer .wrap{display
 }
 @media(max-width:640px){
   .grid{grid-template-columns:1fr}
+  /* projets façon Reels : un projet par écran, défilement aimanté */
+  html{scroll-snap-type:y proximity}
+  #grid{display:block}
+  #grid .it{position:relative;display:block;height:calc(100svh - 24px);margin:0 0 12px;padding:0;border:0;overflow:hidden;background:var(--ink);color:#fff;scroll-snap-align:center;scroll-snap-stop:always}
+  #grid .it:hover{transform:none;box-shadow:none}
+  #grid .it .im{position:absolute;inset:0;aspect-ratio:auto;border-radius:0;background:var(--ink)}
+  #grid .it .blur{display:block;position:absolute;inset:-40px;background-size:cover;background-position:center top;filter:blur(26px) brightness(.42) saturate(1.2)}
+  #grid .it .im img{position:absolute;left:0;top:11%;width:100%;height:auto;aspect-ratio:16/10;object-fit:cover;object-position:top;z-index:1;box-shadow:0 30px 60px rgba(0,0,0,.55);transform:scale(.9);opacity:.5;transition:transform 1s cubic-bezier(.16,1,.3,1),opacity .8s}
+  #grid .it.live .im img{transform:none;opacity:1}
+  #grid .it .im::before{content:"";position:absolute;inset:0;z-index:2;background:linear-gradient(0deg,rgba(11,13,30,.97) 0%,rgba(11,13,30,.82) 36%,transparent 60%)}
+  #grid .it .im .k{z-index:3;top:14px;left:14px;color:var(--ink)}
+  #grid .it .num{display:block;position:absolute;z-index:4;top:14px;right:14px;font-weight:800;font-size:13px;padding:7px 10px;background:rgba(11,13,30,.6);border:1px solid rgba(255,255,255,.18);border-radius:2px;font-variant-numeric:tabular-nums}
+  #grid .it .bd{position:absolute;left:0;right:0;bottom:0;z-index:4;padding:20px 18px 106px}
+  #grid .it h3{font-size:36px;color:#fff}
+  #grid .it h3 span{display:none}
+  #grid .it p{color:rgba(255,255,255,.8);font-size:15px}
+  #grid .it .fact{color:#fff}
+  #grid .it .tg span{border-color:rgba(255,255,255,.25);color:#fff}
+  #grid .it .url{color:rgba(255,255,255,.55);margin-top:10px}
+  #grid .it .go-btn{display:inline-flex;align-items:center;gap:8px;margin-top:14px;padding:12px 16px;background:var(--o);color:var(--on);font-weight:700;font-size:14px;border-radius:2px}
+  #grid .it .bd>*{opacity:0;transform:translate3d(0,26px,0);transition:opacity .6s,transform .8s cubic-bezier(.16,1,.3,1)}
+  #grid .it.live .bd>*{opacity:1;transform:none}
+  #grid .it.live .bd>*:nth-child(2){transition-delay:.07s}#grid .it.live .bd>*:nth-child(3){transition-delay:.14s}#grid .it.live .bd>*:nth-child(4){transition-delay:.21s}#grid .it.live .bd>*:nth-child(5){transition-delay:.28s}#grid .it.live .bd>*:nth-child(6){transition-delay:.35s}
+  #grid .it .swipe{display:flex;align-items:center;gap:4px;position:absolute;z-index:5;right:14px;top:56px;font-size:11px;font-weight:600;color:rgba(255,255,255,.75);white-space:nowrap}
+  #grid .it .swipe svg{width:16px;height:16px;animation:nudge 1.4s ease-in-out infinite}
+  @keyframes nudge{0%,100%{transform:translateY(-3px)}50%{transform:translateY(4px)}}
+  #grid .it .bd{padding-bottom:118px}
+  .pager{display:none}
   .zl{font-size:clamp(36px,11.5vw,58px)}
   .me{height:min(54vh,400px);justify-self:start;margin:22px 0 -30px 2px}
   .me .tag,.me .tag.l{width:min(31vw,118px);left:calc(100% + 6px);right:auto;text-align:left;padding:6px 0 6px 9px;border-left:2px solid var(--o);border-right:0}
@@ -464,18 +493,19 @@ const PJ=[
  ["destinations-canada","destinations-canada.com","https://destinations-canada.com/","Destinations Canada","Agence qui accompagne les projets d'études, de travail et d'immigration au Canada, avec prise de rendez-vous.","",["Site d'entreprise","Rendez-vous"],"en","Site d'entreprise"],
  ["expresstourisme","expresstourisme.com","https://expresstourisme.com","Express Tourisme","L'une des premières plateformes de tourisme en ligne au Bénin.","",["Symfony","Tourisme"],"en","Site d'entreprise"]
 ];
-const card=([f,u,l,t,d,fa,tg,k,c])=>`<a class="it enter" data-k="${k}" href="${l}" target="_blank" rel="noopener"><div class="im"><img src="assets/projets/${f}.webp" alt="Capture du site ${t}" loading="lazy"><span class="k">${c}</span></div><div class="bd"><h3>${t}<span>${AR}</span></h3><p>${d}</p>${fa?`<span class="fact">${fa}</span>`:""}<div class="tg">${tg.map(x=>`<span>${x}</span>`).join("")}</div><span class="url">${u}</span></div></a>`;
+const card=([f,u,l,t,d,fa,tg,k,c],idx,n)=>`<a class="it enter" data-k="${k}" href="${l}" target="_blank" rel="noopener"><div class="im"><span class="blur" style="background-image:url(assets/projets/${f}.webp)"></span><img src="assets/projets/${f}.webp" alt="Capture du site ${t}" loading="lazy"><span class="k">${c}</span><span class="num">${idx} / ${n}</span></div><div class="bd"><h3>${t}<span>${AR}</span></h3><p>${d}</p>${fa?`<span class="fact">${fa}</span>`:""}<div class="tg">${tg.map(x=>`<span>${x}</span>`).join("")}</div><span class="url">${u}</span><span class="go-btn">Visiter le site ${AR}</span></div>${idx===1&&n>1?`<span class="swipe" aria-hidden="true"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 16l-6-6 1.4-1.4 4.6 4.6 4.6-4.6L18 10z"/></svg>Glissez</span>`:""}</a>`;
 const F=[["all","Tous"],["pf","Plateformes"],["rs","Réservation en ligne"],["en","Sites d'entreprise"]];
-const PER=4;let filt="all",page=1,seen=false;
+const REEL=matchMedia("(max-width:640px)");const per=()=>REEL.matches?99:4;let filt="all",page=1,seen=false;
 tabs.innerHTML=F.map(([k,n],i)=>`<button type="button" class="${i?"":"on"}" aria-pressed="${!i}" data-f="${k}">${n} (${k==="all"?PJ.length:PJ.filter(p=>p[7]===k).length})</button>`).join("");
 /* fait entrer les cartes une par une */
 function play(){grid.querySelectorAll(".it.enter:not(.go)").forEach((it,i)=>setTimeout(()=>it.classList.add("go"),80+i*140))}
 function render(animate){
-  const list=PJ.filter(p=>filt==="all"||p[7]===filt),pages=Math.max(1,Math.ceil(list.length/PER));
+  const PER=per(),list=PJ.filter(p=>filt==="all"||p[7]===filt),pages=Math.max(1,Math.ceil(list.length/PER));
   page=Math.min(page,pages);
   const draw=()=>{
     grid.classList.remove("leave");
-    grid.innerHTML=list.slice((page-1)*PER,page*PER).map(card).join("");
+    grid.innerHTML=list.slice((page-1)*PER,page*PER).map((p,i)=>card(p,(page-1)*PER+i+1,list.length)).join("");
+    watchReels();
     const from=(page-1)*PER+1,to=Math.min(page*PER,list.length);
     pager.classList.toggle("solo",pages<2);
     pager.innerHTML=`<span class="info">Projets <b>${from} à ${to}</b> sur ${list.length}</span><span class="bar" aria-hidden="true"><i style="transform:scaleX(${page/pages})"></i></span><span class="nums"><button type="button" data-p="${page-1}" ${page<2?"disabled":""} aria-label="Page précédente"><svg class="ar" viewBox="0 0 24 24" aria-hidden="true" style="transform:rotate(180deg)"><path fill="currentColor" d="M13 5l7 7-7 7-1.4-1.4 4.6-4.6H4v-2h12.2l-4.6-4.6z"/></svg></button>${Array.from({length:pages},(_,i)=>`<button type="button" data-p="${i+1}" ${i+1===page?'aria-current="page"':""}>${i+1}</button>`).join("")}<button type="button" data-p="${page+1}" ${page>=pages?"disabled":""} aria-label="Page suivante"><svg class="ar" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M13 5l7 7-7 7-1.4-1.4 4.6-4.6H4v-2h12.2l-4.6-4.6z"/></svg></button></span>`;
@@ -483,6 +513,16 @@ function render(animate){
   };
   if(animate&&grid.children.length){grid.classList.add("leave");setTimeout(draw,300)}else draw();
 }
+/* mode Reels : chaque projet s'anime quand il remplit l'écran */
+let reelIO=null;
+function watchReels(){
+  if(reelIO)reelIO.disconnect();
+  const cards=grid.querySelectorAll(".it");
+  if(!REEL.matches||SHOT){cards.forEach(c=>c.classList.add("live"));return}
+  reelIO=new IntersectionObserver(es=>es.forEach(e=>e.target.classList.toggle("live",e.intersectionRatio>.55)),{threshold:[0,.55,1]});
+  cards.forEach(c=>reelIO.observe(c));
+}
+REEL.addEventListener("change",()=>{page=1;render(false)});
 render(false);
 /* les cartes n'entrent qu'au moment où la section arrive à l'écran */
 new IntersectionObserver((es,o)=>es.forEach(e=>{if(e.isIntersecting){seen=true;play();o.disconnect()}}),{threshold:.15}).observe(grid);
